@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-       app: notes-api
+        app: notes-api
     spec:
       containers:
         - name: notes-api
@@ -19,5 +19,10 @@ spec:
           ports:
             - containerPort: 5000
           env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
             - name: DATABASE_URL
-              value: "sqlite:////tmp/notes.db"
+              value: "postgresql://postgres:$(POSTGRES_PASSWORD)@postgres-service:5432/notesdb"
