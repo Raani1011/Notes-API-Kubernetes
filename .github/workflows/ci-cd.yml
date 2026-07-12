@@ -1,0 +1,33 @@
+name: CI/CD Pipline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@3
+        with:
+          username: rania2609
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context:
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            rania2609/notes-api:latest
+            rania2609/notes-api:${{ github.sha }}
