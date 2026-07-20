@@ -33,16 +33,18 @@ This project demonstrates a complete cloud-native deployment workflow — from a
 
 ## Running Locally (Docker + minikube)
 
+```bash
 docker build -t notes-api:v1 .
 minikube image load notes-api:v1
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 kubectl get pods
 minikube service notes-api-service --url
-
+```
 
 ## Deploying to AWS EKS
 
+```bash
 eksctl create cluster --name notes-api-cluster --region ap-south-1 --node-type t3.medium --nodes 2 --managed
 kubectl apply -f postgres-secret.yaml
 kubectl apply -f postgres-pvc.yaml
@@ -51,13 +53,14 @@ kubectl apply -f postgres-service.yaml
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 kubectl apply -f ingress.yaml
-
+```
 
 ## Verification
 
+```bash
 curl https://notesapi-raani.online/health
-
-Response: {"status": "ok"}
+# Response: {"status": "ok"}
+```
 
 ## CI/CD
 
