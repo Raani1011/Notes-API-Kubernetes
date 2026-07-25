@@ -1,0 +1,5 @@
+replicaCount: 2
+environment: staging
+image:
+  repository: rania2609/notes-api
+  tag: latest

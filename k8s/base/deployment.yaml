@@ -19,6 +19,8 @@ spec:
           ports:
             - containerPort: 5000
           env:
+            - name: APP_ENV
+              value: "base"
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:

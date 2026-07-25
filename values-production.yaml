@@ -1,0 +1,5 @@
+replicaCount: 4
+environment: production
+image:
+  repository: rania2609/notes-api
+  tag: latest

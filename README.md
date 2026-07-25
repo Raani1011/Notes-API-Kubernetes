@@ -1,10 +1,10 @@
 # Notes API — Kubernetes Deployment
 
-A Flask REST API for managing notes, containerized with Docker and deployed to production on AWS EKS with full observability, CI/CD automation, and HTTPS.
+A Flask REST API for managing notes, containerized with Docker and deployed to production on AWS EKS with full observability, CI/CD automation, HTTPS, and multi-environment support.
 
 ## Overview
 
-This project demonstrates a complete cloud-native deployment workflow — from application code to a production-grade, self-healing, monitored, and secured deployment on AWS EKS. Built as part of a 30-day Cloud/DevOps learning sprint.
+This project demonstrates a complete cloud-native deployment workflow — from application code to a production-grade, self-healing, monitored, and secured deployment on AWS EKS, with staging and production environments managed via both Kustomize and Helm. Built as part of a 30-day Cloud/DevOps learning sprint.
 
 ## Tech Stack
 
@@ -12,6 +12,7 @@ This project demonstrates a complete cloud-native deployment workflow — from a
 - **Database:** PostgreSQL (persistent storage via EBS)
 - **Containerization:** Docker
 - **Orchestration:** Kubernetes (AWS EKS)
+- **Environment Management:** Kustomize (base + overlays), Helm (custom chart)
 - **CI/CD:** GitHub Actions with OIDC federation (secretless AWS authentication)
 - **Monitoring:** Prometheus, Grafana
 - **Alerting:** Alertmanager (Slack integration)
@@ -23,13 +24,14 @@ This project demonstrates a complete cloud-native deployment workflow — from a
 
 - `GET /notes` — Retrieve all notes
 - `POST /notes` — Create a new note
-- `GET /health` — Health check endpoint
+- `GET /health` — Health check endpoint (returns current environment)
 
 ## Architecture Highlights
 
 - **Auto-deploy pipeline:** every push to `main` builds a Docker image, pushes it to Docker Hub, and automatically deploys to EKS — authenticated via GitHub OIDC, no stored AWS credentials
 - **Full observability stack:** Prometheus scrapes cluster and application metrics, Grafana visualizes them, Alertmanager routes alerts to Slack, and Loki centralizes logs — all queryable from one Grafana instance
 - **Production HTTPS:** real, publicly trusted TLS certificate via AWS Certificate Manager, terminated at an internet-facing Application Load Balancer
+- **Multi-environment support:** staging and production run as fully independent deployments, each configurable via Kustomize overlays or a Helm chart with per-environment values files
 
 ## Running Locally (Docker + minikube)
 
@@ -55,11 +57,31 @@ kubectl apply -f service.yaml
 kubectl apply -f ingress.yaml
 ```
 
+## Multi-Environment Deployment
+
+### Option 1: Kustomize (base + overlays)
+
+```bash
+kubectl create namespace staging
+kubectl create namespace production
+kubectl apply -k k8s/overlays/staging
+kubectl apply -k k8s/overlays/production
+```
+
+### Option 2: Helm (custom chart)
+
+```bash
+helm install notes-api notes-api-chart -f values-staging.yaml -n staging
+helm install notes-api notes-api-chart -f values-production.yaml -n production
+```
+
+Both approaches deploy from a single source of truth, with only environment-specific values (replica count, environment name) differing between staging and production.
+
 ## Verification
 
 ```bash
 curl https://notesapi-raani.online/health
-# Response: {"status": "ok"}
+# Response: {"status": "ok", "environment": "production"}
 ```
 
 ## CI/CD
@@ -73,4 +95,4 @@ Every push to `main` triggers `.github/workflows/ci-cd.yml`, which:
 
 Raani — [GitHub](https://github.com/Raani1011)
 
-30-day Cloud/DevOps learning sprint — Day 9 of 30.
+30-day Cloud/DevOps learning sprint — Day 13 of 30.

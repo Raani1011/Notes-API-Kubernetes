@@ -3,16 +3,21 @@ kind: Ingress
 metadata:
   name: notes-api-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:249451071183:certificate/c7ac3947-1129-47a6-9ac2-89b3f9b7934f
 spec:
   rules:
-    - host: notes-api.local
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: notes-api-service
-                port:
-                  number: 5000
+  - host: notesapi-raani.online
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: notes-api-service
+            port:
+              number: 5000

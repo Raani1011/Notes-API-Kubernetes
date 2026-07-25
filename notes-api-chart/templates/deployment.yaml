@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: notes-api
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: notes-api
@@ -14,11 +14,13 @@ spec:
     spec:
       containers:
         - name: notes-api
-          image: rania2609/notes-api:latest
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
           env:
+            - name: APP_ENV
+              value: {{ .Values.environment }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
