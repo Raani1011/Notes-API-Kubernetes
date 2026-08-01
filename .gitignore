@@ -2,3 +2,11 @@ venv/
 __pycache__/
 *.pyc
 postgres-secret.yaml
+awscliv2.zip
+aws/
+get_helm.sh
+hashicorp.gpg
+**/.terraform/
+*.tfstate
+*.tfstate.*
+terraform-eks/old-root-backup/
