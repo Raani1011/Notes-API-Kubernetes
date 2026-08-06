@@ -15,3 +15,4 @@ variable "postgres_password" {
   type        = string
   sensitive   = true
 }
+# Module v1.1.0: added clarifying comment
