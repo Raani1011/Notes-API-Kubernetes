@@ -85,7 +85,9 @@ The EKS cluster, VPC, and full application stack are also fully managed via Terr
 - **Remote state:** S3 backend with versioning, DynamoDB for state locking
 - **Security:** database credentials passed as a `sensitive = true` Terraform variable via environment variable at apply-time — never hardcoded or committed to version control
 - **State management:** practiced `terraform import` (bringing manually-created resources under Terraform control), `terraform state mv` (safely renaming resources without destroy/recreate), and drift detection via `terraform plan -refresh-only`
-- **for_each:** used to provision multiple resources from a single block definition instead of duplicating resource code
+- **for_each and dynamic blocks:** used to provision multiple resources, and multiple repeated nested blocks within a single resource, from one definition instead of duplicating code
+- **Lifecycle rules:** `prevent_destroy` used to protect critical resources from accidental teardown, even when explicitly targeted
+- **Module versioning:** the shared module is tagged in Git (e.g. `eks-module-v1.0.0`) and referenced via a version-pinned source URL, so environments consume a fixed version rather than a moving local path — updating the module doesn't affect environments pinned to an older tag
 
 ### Deploying via Terraform
 
@@ -114,4 +116,4 @@ Every push to `main` triggers `.github/workflows/ci-cd.yml`, which:
 
 Raani — [GitHub](https://github.com/Raani1011)
 
-30-day Cloud/DevOps learning sprint — Day 20 of 30.
+30-day Cloud/DevOps learning sprint — Day 22 of 30.
