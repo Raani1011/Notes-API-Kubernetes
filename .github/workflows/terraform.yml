@@ -1,0 +1,50 @@
+name: Terraform Plan & Apply
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'terraform-eks/environments/staging/**'
+      - 'terraform-eks/modules/**'
+  push:
+    branches: [main]
+    paths:
+      - 'terraform-eks/environments/staging/**'
+      - 'terraform-eks/modules/**'
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform-eks/environments/staging
+    env:
+      TF_VAR_postgres_password: ${{ secrets.POSTGRES_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::249451071183:role/github-actions-terraform
+          aws-region: ap-south-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color
+
+      - name: Terraform Apply
+        if: github.event_name == 'push'
+        run: terraform apply -auto-approve
