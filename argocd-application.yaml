@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notes-api-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Raani1011/Notes-API-Kubernetes.git
+    targetRevision: main
+    path: notes-api-chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: staging
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
