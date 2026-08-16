@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: notes-api-production
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Raani1011/Notes-API-Kubernetes.git
+    targetRevision: main
+    path: notes-api-chart
+    helm:
+      valueFiles:
+        - values-production.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
