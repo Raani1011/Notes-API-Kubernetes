@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postsync-hook-job
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    spec:
+      containers:
+        - name: hook
+          image: busybox
+          command: ["sh", "-c", "echo 'PostSync hook ran after both ConfigMaps synced'"]
+      restartPolicy: Never
+  backoffLimit: 0
