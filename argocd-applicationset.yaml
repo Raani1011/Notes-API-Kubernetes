@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: notes-api-envs
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - env: staging
+            valuesFile: values.yaml
+          - env: production
+            valuesFile: values-production.yaml
+  template:
+    metadata:
+      name: 'notes-api-{{env}}'
+      namespace: argocd
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/Raani1011/Notes-API-Kubernetes.git
+        targetRevision: main
+        path: notes-api-chart
+        helm:
+          valueFiles:
+            - '{{valuesFile}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{env}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
